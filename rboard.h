@@ -1,6 +1,8 @@
 #ifndef RBOARD_H_
 #define RBOARD_H_
 
+#include <ncurses.h>
+
 #define BUFFER_SIZE 255
 
 int readFirstLineAux(FILE* file, int* n, int* m, int* z, int* p, int* b){
