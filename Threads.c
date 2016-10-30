@@ -17,44 +17,104 @@ typedef struct th_zombie{
     int z_columna;	/*Posicion del zombie*/
 }zombie;
 
+/*Inicializacion del semaforo*/
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 /*Definios la funcion de movimiento de los thread*/
 /*Para eso se necesita la persona para obtener todos sus datos*/
-void move(people *persona){
-    /*Comprobamos primeros los 4 casos en orden arriba, abajo, derecha e izquieda*/
-    /*Como el movimiento es aleatorio usamos un random de 0-3*/
+
+void move(people *persona, char** board){
+    /*Comprobamos primeros los 8 casos en orden arriba, abajo, derecha e izquieda*/
+    /*Como el movimiento es aleatorio usamos un random de 0-7*/
+    int i, j;
+    i = persona->p_fila;
+    j = persona->p_columna;
     int contador = 0;
     int mov;
-    while(contador <= 4){
-        mov = (int) random()%4;
-        if(contador == 4){
-            /*esta encerrado y se queda ahi*/
-        }
+    while(contador < 8){
+        mov = (int) random()%8;
         if (mov == 0){
             /*Comprobamos que [i][j-1] arriba*/
+            if(board[i][j-1] == 0){
+                persona->p_columna = j-1;
+                board[i][j-1] = 'P';
+            }
             /*si esta ocupada suma al contador*/
             contador = contador + 1;
         }
         if (mov == 1){
             /*Comprobamos que [i][j+1] abajo*/
+            if(board[i][j+1] == 0){
+                persona->p_columna = j+1;
+                board[i][j+1] = 'P';
+            }
             /*si esta ocupada suma al contador*/
             contador = contador + 1;
         }
         if (mov == 2){
             /*Comprobamos que [i+1][j] derecha*/
+            if(board[i+1][j] == 0){
+                persona->p_fila = i+1;
+                board[i+1][j] = 'P';
+            }
             /*si esta ocupada suma al contador*/
             contador = contador + 1;
         }
         if (mov == 3){
             /*Comprobamos que [i-1][j] izquierda*/
+            if(board[i-1][j] == 0){
+                persona->p_fila = i-1;
+                board[i-1][j] = 'P';
+            }
+            /*si esta ocupada suma al contador*/
+            contador = contador + 1;
+        }
+        if (mov == 4){
+            /*Comprobamos que [i+1][j-1] derecha arriba*/
+            if(board[i+1][j-1] == 0){
+                persona->p_fila = i+1;
+                persona->p_columna = j-1;
+                board[i+1][j-1] = 'P';
+            }
+            /*si esta ocupada suma al contador*/
+            contador = contador + 1;
+        }
+        if (mov == 5){
+            /*Comprobamos que [i-1][j-1] izquierda arriba*/
+            if(board[i-1][j-1] == 0){
+                persona->p_fila = i-1;
+                persona->p_columna = j-1;
+                board[i-1][j-1] = 'P';
+            }
+            /*si esta ocupada suma al contador*/
+            contador = contador + 1;
+        }
+        if (mov == 6){
+            /*Comprobamos que [i+1][j+1] derecha abajo*/
+            if(board[i+1][j+1] == 0){
+                persona->p_fila = i+1;
+                persona->p_columna = j+1;
+                board[i+1][j+1] = 'P';
+            }
+            /*si esta ocupada suma al contador*/
+            contador = contador + 1;
+        }
+        if (mov == 7){
+            /*Comprobamos que [i-1][j+1] izquierda abajo*/
+            if(board[i-1][j+1] == 0){
+                persona->p_fila = i-1;
+                persona->p_columna = j+1;
+                board[i-1][j+1] = 'P';
+            }
             /*si esta ocupada suma al contador*/
             contador = contador + 1;
         }
     }
-        /*se modifican los valores de la posicion de la persona*/
+    /*Caso de que no s epueda mover, este se queda quieto*/
 }
 
 /*Resolvemos la batalla*/
-/*Esta funcion retorna un valor de 0 si sigue vivo de 1 si muere*/
+/*Esta funcion sera cuando se encuentren*/
 int battle(people *p, zombie *z){
 
 }
@@ -63,11 +123,9 @@ int battle(people *p, zombie *z){
 void *create_people(void *arg){
     /*Definimos a la persona*/
     people *p = (people*) arg;
-    while(1){
-        /*La movemos dentro del mapa*/
-        move(p);
-        /*Semaforo*/
-    }
+    pthread_mutex_lock(&mutex);	//Se bloquea el movimiento
+    move(p);
+    pthread_mutex_unlock(&mutex);	//Se desbloquea el movimiento
 }
 
 /*Funcion que crea todas las personas*/
