@@ -145,6 +145,9 @@ void threads_peoples(int n_people, int N, int M){
     for (i=0; i < n_people; i++) {
         pthread_create( &(threads_peoples[i]), NULL, create_people, (void*) &(array_p[i]));
     }
+    for (i=0; i < n_people; i++){
+        pthread_join(threads_peoples[i], NULL);
+    }
 
 }
 /******************************************************************************/
@@ -190,9 +193,6 @@ int main (int argc, char *argv[]){
   board = spaceForBoard(n,m);
   board = board_created(board, n, m);
   threads_peoples(p, n, m);
-  for (i=0; i < n_people; i++){
-    pthread_join(threads_peoples[i], NULL);
-  }
   printBoard(n, m, board);
   exit(0);
 }
