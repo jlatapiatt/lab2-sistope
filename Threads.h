@@ -212,7 +212,12 @@ void *create_people(void *arg){
     while (1) {
       pthread_mutex_lock(&mutex);	//Se bloquea el movimiento
       movePerson(p);
+      erase();
+      printBoardCurses(N,M,board);
+      refresh();
       pthread_mutex_unlock(&mutex);	//Se desbloquea el movimiento
+      //getch();
+      //printBoard(N,M,board);
     }
 
 }
@@ -236,10 +241,10 @@ void threads_people(int n_people){
     for (i=0; i < n_people; i++) {
         pthread_create(&(threads_people[i]), NULL, create_people, (void*) &(array_p[i]));
     }
-/*
+
     for (i=0; i < n_people; i++){
         pthread_join(threads_people[i], NULL);
-    }*/
+    }
 }
 
 /*Funcion que crea a los zombies*/
