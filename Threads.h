@@ -209,9 +209,12 @@ int battle(people *p, zombie *z){
 void *create_people(void *arg){
     /*Definimos a la persona*/
     people *p = (people*) arg;
-    pthread_mutex_lock(&mutex);	//Se bloquea el movimiento
-    movePerson(p);
-    pthread_mutex_unlock(&mutex);	//Se desbloquea el movimiento
+    while (1) {
+      pthread_mutex_lock(&mutex);	//Se bloquea el movimiento
+      movePerson(p);
+      pthread_mutex_unlock(&mutex);	//Se desbloquea el movimiento
+    }
+
 }
 
 /*Funcion que crea todas las personas*/
@@ -231,11 +234,12 @@ void threads_people(int n_people){
     }
     /*Creamos los threads de las peronas*/
     for (i=0; i < n_people; i++) {
-        pthread_create( &(threads_people[i]), NULL, create_people, (void*) &(array_p[i]));
+        pthread_create(&(threads_people[i]), NULL, create_people, (void*) &(array_p[i]));
     }
+/*
     for (i=0; i < n_people; i++){
         pthread_join(threads_people[i], NULL);
-    }
+    }*/
 }
 
 /*Funcion que crea a los zombies*/

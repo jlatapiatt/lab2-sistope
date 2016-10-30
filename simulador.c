@@ -25,8 +25,9 @@ int main (int argc, char *argv[]){
     return 1;
   }
   //printBoard(n,m,board);
-  
+
   initscr(); // inicia la pantalla de ncurses
+  threads_people(p);
   printBoardCurses(n,m,board); // imprime todo el board en un espacio imaginario
   refresh(); // actualiza la pantalla de ncurses
   getch(); // espera una accion del usuario
