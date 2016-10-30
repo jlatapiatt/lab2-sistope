@@ -13,6 +13,9 @@ typedef struct th_people{
 
 /*Tablero declarado global*/
 char** board;
+int N;
+int M;
+
 
 /*Inicializacion del semaforo*/
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -26,12 +29,11 @@ void move_people(people *persona, char** board){
     i = persona->p_fila;
     j = persona->p_columna;
     int contador = 0;
-    int mov;
+    int mov = rand()%8;
     while(contador < 8){
-        mov = rand()%8;
         if (mov == 0){
             /*Comprobamos que [i][j-1] arriba*/
-            if(board[i][j-1] == '0'){
+            if(j > 0 && board[i][j-1] == '0'){
                 persona->p_columna = j-1;
                 board[i][j-1] = 'P';
                 contador = 8;
@@ -41,7 +43,7 @@ void move_people(people *persona, char** board){
         }
         if (mov == 1){
             /*Comprobamos que [i][j+1] abajo*/
-            if(board[i][j+1] == '0'){
+            if(j < M-1 && board[i][j+1] == '0'){
                 persona->p_columna = j+1;
                 board[i][j+1] = 'P';
                 contador = 8;
@@ -51,7 +53,7 @@ void move_people(people *persona, char** board){
         }
         if (mov == 2){
             /*Comprobamos que [i+1][j] derecha*/
-            if(board[i+1][j] == '0'){
+            if(i < N-1 && board[i+1][j] == '0'){
                 persona->p_fila = i+1;
                 board[i+1][j] = 'P';
                 contador = 8;
@@ -61,7 +63,7 @@ void move_people(people *persona, char** board){
         }
         if (mov == 3){
             /*Comprobamos que [i-1][j] izquierda*/
-            if(board[i-1][j] == '0'){
+            if(i > 0 && board[i-1][j] == '0'){
                 persona->p_fila = i-1;
                 board[i-1][j] = 'P';
                 contador = 8;
@@ -71,7 +73,7 @@ void move_people(people *persona, char** board){
         }
         if (mov == 4){
             /*Comprobamos que [i+1][j-1] derecha arriba*/
-            if(board[i+1][j-1] == '0'){
+            if(i < N-1 && j > 0 && board[i+1][j-1] == '0'){
                 persona->p_fila = i+1;
                 persona->p_columna = j-1;
                 board[i+1][j-1] = 'P';
@@ -82,7 +84,7 @@ void move_people(people *persona, char** board){
         }
         if (mov == 5){
             /*Comprobamos que [i-1][j-1] izquierda arriba*/
-            if(board[i-1][j-1] == '0'){
+            if(i > 0 && j > 0 && board[i-1][j-1] == '0'){
                 persona->p_fila = i-1;
                 persona->p_columna = j-1;
                 board[i-1][j-1] = 'P';
@@ -93,7 +95,7 @@ void move_people(people *persona, char** board){
         }
         if (mov == 6){
             /*Comprobamos que [i+1][j+1] derecha abajo*/
-            if(board[i+1][j+1] == '0'){
+            if(i < N-1 && j < M-1 && board[i+1][j+1] == '0'){
                 persona->p_fila = i+1;
                 persona->p_columna = j+1;
                 board[i+1][j+1] = 'P';
@@ -104,7 +106,7 @@ void move_people(people *persona, char** board){
         }
         if (mov == 7){
             /*Comprobamos que [i-1][j+1] izquierda abajo*/
-            if(board[i-1][j+1] == '0'){
+            if(i > 0 && j < M-1 && board[i-1][j+1] == '0'){
                 persona->p_fila = i-1;
                 persona->p_columna = j+1;
                 board[i-1][j+1] = 'P';
@@ -113,6 +115,7 @@ void move_people(people *persona, char** board){
             /*si esta ocupada suma al contador*/
             contador = contador + 1;
         }
+        mov = (mov+1)%8;
     }
     /*Caso de que no s epueda mover, este se queda quieto*/
 }
@@ -189,6 +192,8 @@ int main (int argc, char *argv[]){
   n = atoi(argv[1]);
   m = atoi(argv[2]);
   p = atoi(argv[3]);
+  N = n;
+  M = m;
 
   board = spaceForBoard(n,m);
   board = board_created(board, n, m);
