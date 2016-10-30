@@ -28,7 +28,7 @@ void move_people(people *persona, char** board){
     int contador = 0;
     int mov;
     while(contador < 8){
-        mov = (int) random()%8;
+        mov = rand()%8;
         if (mov == 0){
             /*Comprobamos que [i][j-1] arriba*/
             if(board[i][j-1] == '0'){
@@ -121,9 +121,9 @@ void move_people(people *persona, char** board){
 void *create_people(void *arg){
     /*Definimos a la persona*/
     people *p = (people*) arg;
-    //pthread_mutex_lock(&mutex);	/*Se bloquea el movimiento*/
+    pthread_mutex_lock(&mutex);	/*Se bloquea el movimiento*/
     move_people(p, board);
-    //pthread_mutex_unlock(&mutex);	/*Se desbloquea el movimiento*/
+    pthread_mutex_unlock(&mutex);	/*Se desbloquea el movimiento*/
 }
 
 /*Funcion que crea a las personas*/
@@ -145,9 +145,7 @@ void threads_peoples(int n_people, int N, int M){
     for (i=0; i < n_people; i++) {
         pthread_create( &(threads_peoples[i]), NULL, create_people, (void*) &(array_p[i]));
     }
-    for (i=0; i < n_people; i++){
-      pthread_join(threads_peoples[i], NULL);
-    }
+
 }
 /******************************************************************************/
 /*Generar board*/
@@ -192,5 +190,9 @@ int main (int argc, char *argv[]){
   board = spaceForBoard(n,m);
   board = board_created(board, n, m);
   threads_peoples(p, n, m);
+  for (i=0; i < n_people; i++){
+    pthread_join(threads_peoples[i], NULL);
+  }
   printBoard(n, m, board);
+  exit(0);
 }
