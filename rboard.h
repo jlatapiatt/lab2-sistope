@@ -5,6 +5,11 @@
 
 #define BUFFER_SIZE 255
 
+/* Variables Globales del Tablero */
+char** board;
+int N;
+int M;
+
 int readFirstLineAux(FILE* file, int* n, int* m, int* z, int* p, int* b){
   if (file == NULL){
     return 0;
@@ -33,6 +38,8 @@ int readFirstLineAux(FILE* file, int* n, int* m, int* z, int* p, int* b){
       firstLineFlag++;
       if (c == '\n'){
         if (firstLineFlag == 5){
+          N = *n;
+          M = *m;
           return 1;
         } else {
           return 0;
@@ -106,6 +113,16 @@ void printBoard(int n, int m, char** board){
     }
   }
   printf("\n\n");
+}
+
+void printBoardCurses(int n, int m, char** board){
+  for(int j = 0; j < m; j++){
+    printw("\n");
+    for(int i = 0; i < n; i++){
+      printw("%c",board[i][j]);
+    }
+  }
+  printw("\n\n");
 }
 
 char** spaceForBoard(int n, int m){

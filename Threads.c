@@ -129,10 +129,10 @@ void *create_people(void *arg){
 }
 
 /*Funcion que crea todas las personas*/
-void threads_peoples(int n_people){
+void threads_people(int n_people){
     int i;
     /*Reservamos memoria para los thread y el arreglo*/
-    pthread_t *threads_peoples = (pthread_t*) malloc(n_people*sizeof(pthread_t));
+    pthread_t *threads_people = (pthread_t*) malloc(n_people*sizeof(pthread_t));
     people *array_p = (people*)malloc(sizeof(people)*n_people);
     /*Asignamos*/
     for(i=0; i< n_people; i++){
@@ -146,7 +146,7 @@ void threads_peoples(int n_people){
     }
     /*Creamos los threads de las peronas*/
     for (i=0; i < n_people; i++) {
-        pthread_create( &(threads_peoples[i]), NULL, create_people, (void*) &(array_p[i]));
+        pthread_create( &(threads_people[i]), NULL, create_people, (void*) &(array_p[i]));
     }
 }
 
