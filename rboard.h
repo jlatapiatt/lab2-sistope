@@ -13,6 +13,9 @@ pthread_barrier_t barrier;
 int id_barrier1;
 int B;
 int E = 0;
+int Z_spawned = 0;
+int Z_alive = 0;
+int P_alive;
 
 int readFirstLineAux(FILE* file, int* n, int* m, int* z, int* p, int* b){
   if (file == NULL){
@@ -45,6 +48,7 @@ int readFirstLineAux(FILE* file, int* n, int* m, int* z, int* p, int* b){
           N = *n;
           M = *m;
           B = *b;
+          P_alive = *p;
           return 1;
         } else {
           return 0;

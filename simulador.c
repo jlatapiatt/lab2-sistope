@@ -32,12 +32,17 @@ int main (int argc, char *argv[]){
   threads_zombies(z);
   printBoardCurses(n,m,board); // imprime todo el board en un espacio imaginario
   refresh(); // actualiza la pantalla de ncurses
-
+  int boardClock = 0;
   while (1) {
     //podria haber un mutex...
     erase();
     printBoardCurses(N,M,board);
+    printw("\n\n");
+    printw("\tTiempo: %d:%d\n", boardClock/60, boardClock%60);
+    printw("\tPersonas: %d\n", P_alive);
+    printw("\tZombies: %d\n", Z_alive);
     refresh();
+    boardClock++;
     id_barrier1 = pthread_barrier_init(&barrier, NULL, E);
     /*Si no han llegado todos descansa 3 segundos*/
     if(id_barrier1 == 0){
