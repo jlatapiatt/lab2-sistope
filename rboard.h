@@ -11,6 +11,7 @@ int N;
 int M;
 pthread_barrier_t barrier;
 int id_barrier1;
+int B;
 int E = 0;
 
 int readFirstLineAux(FILE* file, int* n, int* m, int* z, int* p, int* b){
@@ -43,6 +44,7 @@ int readFirstLineAux(FILE* file, int* n, int* m, int* z, int* p, int* b){
         if (firstLineFlag == 5){
           N = *n;
           M = *m;
+          B = *b;
           return 1;
         } else {
           return 0;

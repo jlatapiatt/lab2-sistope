@@ -15,6 +15,7 @@ typedef struct people{
     int p_fila;	/*Posicion de la persona*/
     int p_columna;	/*Posicion de la persona*/
     int p_weapon;	/*Arma de la persona*/
+    int p_bitten;
 }people;
 
 /*Estructura de datos necesaria para cada hebra persona*/
@@ -51,7 +52,7 @@ void movePerson(people *persona){
                 persona->p_columna = j-1;
                 board[i][j-1] = 'P';
                 board[i][j] = '0';
-                persona->p_weapon = 1;
+                persona->p_weapon = B;
                 contador = 8;
             }
           }
@@ -70,7 +71,7 @@ void movePerson(people *persona){
               persona->p_columna = j+1;
               board[i][j+1] = 'P';
               board[i][j] = '0';
-              persona->p_weapon = 1;
+              persona->p_weapon = B;
               contador = 8;
           }
         }
@@ -89,7 +90,7 @@ void movePerson(people *persona){
               persona->p_fila = i+1;
               board[i+1][j] = 'P';
               board[i][j] = '0';
-              persona->p_weapon = 1;
+              persona->p_weapon = B;
               contador = 8;
             }
           }
@@ -108,7 +109,7 @@ void movePerson(people *persona){
               persona->p_fila = i-1;
               board[i-1][j] = 'P';
               board[i][j] = '0';
-              persona->p_weapon = 1;
+              persona->p_weapon = B;
               contador = 8;
           }
         }
@@ -129,7 +130,7 @@ void movePerson(people *persona){
               persona->p_columna = j-1;
               board[i+1][j-1] = 'P';
               board[i][j] = '0';
-              persona->p_weapon = 1;
+              persona->p_weapon = B;
               contador = 8;
           }
         }
@@ -150,7 +151,7 @@ void movePerson(people *persona){
               persona->p_columna = j-1;
               board[i-1][j-1] = 'P';
               board[i][j] = '0';
-              persona->p_weapon = 1;
+              persona->p_weapon = B;
               contador = 8;
             }
           }
@@ -171,7 +172,7 @@ void movePerson(people *persona){
               persona->p_columna = j+1;
               board[i+1][j+1] = 'P';
               board[i][j] = '0';
-              persona->p_weapon = 1;
+              persona->p_weapon = B;
               contador = 8;
             }
           }
@@ -192,7 +193,7 @@ void movePerson(people *persona){
               persona->p_columna = j+1;
               board[i-1][j+1] = 'P';
               board[i][j] = '0';
-              persona->p_weapon = 1;
+              persona->p_weapon = B;
               contador = 8;
             }
           }
@@ -346,21 +347,82 @@ int battle(people *p, zombie *z){
   return 0;
 }
 
+int amIDead(people* person){
+  int i = person->p_fila;
+  int j = person->p_columna;
+  if (person->p_bitten == 0){
+    //CREAR UN ZOMBIE
+    pthread_exit(NULL);
+  } else if (person->p_bitten > 0){
+    person->p_bitten = person->p_bitten - 1;
+  } else if (person->p_weapon == 0){
+    if (j > 0){
+      if (board[i][j-1] == 'Z'){
+        //MATATE en 3 segundos;
+        person->p_bitten = 3;
+        return 1;
+      } else if (i < N-1 && board[i+1][j-1] == 'Z'){
+        //MATATE en 3 segundos;
+        person->p_bitten = 3;
+        return 1;
+      }else if (i > 0 && board[i-1][j-1] == 'Z'){
+        //MATATE en 3 segundos;
+        person->p_bitten = 3;
+        return 1;
+      }
+    }
+    if (j < M-1){
+      if (board[i][j+1] == 'Z'){
+        //MATATE en 3 segundos;
+        person->p_bitten = 3;
+        return 1;
+      } else if (i < N-1 && board[i+1][j+1] == 'Z'){
+        //MATATE en 3 segundos;
+        person->p_bitten = 3;
+        return 1;
+      }else if (i > 0 && board[i-1][j+1] == 'Z'){
+        //MATATE en 3 segundos;
+        person->p_bitten = 3;
+        return 1;
+      }
+      if (i > 0 && board[i-1][j] == 'Z'){
+        //MATATE en 3 segundos;
+        person->p_bitten = 3;
+        return 1;
+      }
+      if (i < N-1 && board[i+1][j] == 'Z'){
+        //MATATE en 3 segundos;
+        person->p_bitten = 3;
+        return 1;
+      }
+    }
+
+  }
+  return 0;
+}
+
+int didIDiededed(zombie* zomb){
+  return 0;
+}
+
 /*Creamos las funciones para las dos hebras*/
 void *create_people(void *arg){
     /*Definimos a la persona*/
     people *p = (people*) arg;
     while (1) {
       pthread_mutex_lock(&mutex);	//Se bloquea el movimiento
-      movePerson(p);
+      if (p->p_bitten == -1){
+        movePerson(p);
+      }
       pthread_mutex_unlock(&mutex);	//Se desbloquea el movimiento
       //printBoard(N,M,board);
       //BARRERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1
       id_barrier1 = pthread_barrier_init(&barrier, NULL, E);
       /*Si no han llegado todos descansa 3 segundos*/
-      if(id_barrier1 == 0){
+      if(id_barrier1 == 0){ //NO DEBERIA SER WHILE?
           sleep(1);
       }
+      amIDead(p);
       //Comprobacion de muerte
       //BARRERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 2
     }
@@ -397,6 +459,7 @@ void threads_people(int n_people){
       array_p[i].p_fila = fila;
       array_p[i].p_columna = columna;
       array_p[i].p_weapon = 0;
+      array_p[i].p_bitten = -1;
     }
     /*Creamos los threads de las peronas*/
     for (i=0; i < n_people; i++) {
