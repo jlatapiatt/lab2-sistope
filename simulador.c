@@ -46,6 +46,7 @@ int main (int argc, char *argv[]){
     if (P_alive == 0 || (Z_alive > 0 && P_alive == 0)){
       getch(); // espera una accion del usuario
       endwin();
+      break;
     }
     id_barrier1 = pthread_barrier_init(&barrier, NULL, E);
     /*Si no han llegado todos descansa 3 segundos*/
