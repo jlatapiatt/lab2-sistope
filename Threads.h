@@ -325,6 +325,21 @@ void moveZombie(zombie *zomb){
   }
   /*Caso de que no s epueda mover, este se queda quieto*/
 }
+/*Entradas Zombie*/
+void startZombie(zombie *zomb){
+    int i;
+    int j;
+    for(i=0; i < N; i++){
+        for(j=0; j < M; j++){
+            if(board[i][j] == 'E'){
+                zomb->z_fila = i;
+                zomb->z_columna = j;
+                board[i][j] = 'Z';
+                break;
+            }
+        }
+    }
+}
 
 /*Resolvemos la batalla*/
 /*Esta funcion sera cuando se encuentren*/
@@ -351,16 +366,18 @@ void *create_zombie(void *arg){
     /*Definimos a la persona*/
     zombie *p = (zombie*) arg;
     while (1) {
-      pthread_mutex_lock(&mutex);	//Se bloquea el movimiento
-      moveZombie(p);
-      pthread_mutex_unlock(&mutex);	//Se desbloquea el movimiento
-      //getch();
-      //printBoard(N,M,board);
-
+        startZombie(p);
+        if(p->z_fila =! 0 || p->z_columna == 0){
+            pthread_mutex_lock(&mutex);	//Se bloquea el movimiento
+            moveZombie(p);
+            pthread_mutex_unlock(&mutex);	//Se desbloquea el movimiento
+        }
+        //getch();
+        //printBoard(N,M,board);
+    }
       //BARRERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1
       //Comprobacion de muerte
       //BARRERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 2
-    }
 }
 
 /*Funcion que crea todas las personas*/
@@ -382,15 +399,16 @@ void threads_people(int n_people){
     for (i=0; i < n_people; i++) {
         pthread_create(&(threads_people[i]), NULL, create_people, (void*) &(array_p[i]));
     }
-
+    /*
     for (i=0; i < n_people; i++){
         pthread_join(threads_people[i], NULL);
-    }
+    }*/
 }
 
 /*Funcion que crea a los zombies*/
 /*Creemos todos los zombies a la vez*/
 void threads_zombies(int n_zombie){
+    int i;
     /*Se Reservamos memoria para los threads*/
     pthread_t *threads_zombies = (pthread_t*) malloc(n_zombie*sizeof(pthread_t));
     /*Se crea el arreglo de zombies*/
@@ -402,8 +420,12 @@ void threads_zombies(int n_zombie){
         array_z[i].z_columna = 0;
     }
     /*Creamos los threads de los zombies*/
-    /*for (i=0; i < n_zombie; i++) {
+    for (i=0; i < n_zombie; i++) {
         pthread_create( &(threads_zombies[i]), NULL, create_zombie, (void*) &(array_z[i]));
+    }
+
+    /*for (i=0; i < n_zombie; i++){
+        pthread_join(threads_zombies[i], NULL);
     }*/
 }
 
