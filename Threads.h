@@ -327,8 +327,7 @@ void moveZombie(zombie *zomb){
 }
 /*Entradas Zombie*/
 void startZombie(zombie *zomb){
-    int i;
-    int j;
+    int i, j;
     for(i=0; i < N; i++){
         for(j=0; j < M; j++){
             if(board[i][j] == 'E'){
@@ -357,6 +356,11 @@ void *create_people(void *arg){
       pthread_mutex_unlock(&mutex);	//Se desbloquea el movimiento
       //printBoard(N,M,board);
       //BARRERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1
+      id_barrier1 = pthread_barrier_init(&barrier, NULL, E);
+      /*Si no han llegado todos descansa 3 segundos*/
+      if(id_barrier1 == 0){
+          sleep(1 );
+      }
       //Comprobacion de muerte
       //BARRERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 2
     }
@@ -367,9 +371,10 @@ void *create_zombie(void *arg){
     zombie *p = (zombie*) arg;
     while (1) {
         startZombie(p);
-        if(p->z_fila =! 0 || p->z_columna == 0){
+        if(p->z_fila != 0 || p->z_columna != 0){
             pthread_mutex_lock(&mutex);	//Se bloquea el movimiento
             moveZombie(p);
+            sleep(1);
             pthread_mutex_unlock(&mutex);	//Se desbloquea el movimiento
         }
         //getch();

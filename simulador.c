@@ -8,6 +8,7 @@
 
 #define BUFFER_SIZE 255
 
+
 int main (int argc, char *argv[]){
   int n,m,z,p,b;
   if (inputErrors(argc, argv) == 0){
@@ -37,8 +38,12 @@ int main (int argc, char *argv[]){
     erase();
     printBoardCurses(N,M,board);
     refresh();
-    //BARRERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1
-    //BARRERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 2
+    /*Barrera para personas*/
+    id_barrier1 = pthread_barrier_init(&barrier, NULL, E);
+    /*Si no han llegado todos descansa 3 segundos*/
+    if(id_barrier1 == 0){
+        sleep(1 );
+    }
   }
   getch(); // espera una accion del usuario
   endwin(); // termina el modo ncurses

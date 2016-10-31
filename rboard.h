@@ -9,6 +9,8 @@
 char** board;
 int N;
 int M;
+pthread_barrier_t barrier;
+int id_barrier1;
 int E = 0;
 
 int readFirstLineAux(FILE* file, int* n, int* m, int* z, int* p, int* b){
