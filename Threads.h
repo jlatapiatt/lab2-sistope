@@ -359,7 +359,7 @@ void *create_people(void *arg){
       id_barrier1 = pthread_barrier_init(&barrier, NULL, E);
       /*Si no han llegado todos descansa 3 segundos*/
       if(id_barrier1 == 0){
-          sleep(1 );
+          sleep(1);
       }
       //Comprobacion de muerte
       //BARRERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 2
@@ -371,12 +371,10 @@ void *create_zombie(void *arg){
     zombie *p = (zombie*) arg;
     while (1) {
         startZombie(p);
-        if(p->z_fila != 0 || p->z_columna != 0){
-            pthread_mutex_lock(&mutex);	//Se bloquea el movimiento
-            moveZombie(p);
-            sleep(1);
-            pthread_mutex_unlock(&mutex);	//Se desbloquea el movimiento
-        }
+        pthread_mutex_lock(&mutex);	//Se bloquea el movimiento
+        moveZombie(p);
+        pthread_mutex_unlock(&mutex);	//Se desbloquea el movimiento
+
         //getch();
         //printBoard(N,M,board);
     }

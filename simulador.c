@@ -38,11 +38,10 @@ int main (int argc, char *argv[]){
     erase();
     printBoardCurses(N,M,board);
     refresh();
-    /*Barrera para personas*/
     id_barrier1 = pthread_barrier_init(&barrier, NULL, E);
     /*Si no han llegado todos descansa 3 segundos*/
     if(id_barrier1 == 0){
-        sleep(1 );
+        sleep(2);
     }
   }
   getch(); // espera una accion del usuario
