@@ -43,6 +43,9 @@ int main (int argc, char *argv[]){
     printw("\tZombies: %d\n", Z_alive);
     refresh();
     boardClock++;
+    if (P_alive == 0 || (Z_alive > 0 && P_alive == 0)){
+      endwin();
+    }
     id_barrier1 = pthread_barrier_init(&barrier, NULL, E);
     /*Si no han llegado todos descansa 3 segundos*/
     if(id_barrier1 == 0){
