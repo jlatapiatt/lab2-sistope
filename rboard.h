@@ -9,6 +9,7 @@
 char** board;
 int N;
 int M;
+int E = 0;
 
 int readFirstLineAux(FILE* file, int* n, int* m, int* z, int* p, int* b){
   if (file == NULL){
@@ -74,6 +75,9 @@ int readRestOfFile(FILE* file, char** board, int n, int m){
 
   while ((c = fgetc(file)) != EOF){
     if (c == 'X' || c == 'E' || c == '0' || c == 'P' || c == 'G' || c == 'Z'){
+      if (c == 'E'){
+        E++;
+      }
       board[i][j] = c;
       i++;
       if (i == n){
