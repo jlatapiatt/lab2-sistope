@@ -16,6 +16,7 @@ int E = 0;
 int Z_spawned = 0;
 int Z_alive = 0;
 int P_alive;
+int P;
 
 int readFirstLineAux(FILE* file, int* n, int* m, int* z, int* p, int* b){
   if (file == NULL){
@@ -49,6 +50,7 @@ int readFirstLineAux(FILE* file, int* n, int* m, int* z, int* p, int* b){
           M = *m;
           B = *b;
           P_alive = *p;
+          P = *p;
           return 1;
         } else {
           return 0;

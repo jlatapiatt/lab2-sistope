@@ -5,10 +5,6 @@
 #define THREADS_H_
 
 
-/* Variable global */
-int N_spawned = 0;
-//ARRAY DE HUMANOS
-
 /*Estructura de datos necesaria para cada hebra persona*/
 typedef struct people{
     int p_id;	/*Identifica el id del thread*/
@@ -24,6 +20,11 @@ typedef struct zombie{
     int z_fila;	/*Posicion del zombie*/
     int z_columna;	/*Posicion del zombie*/
 }zombie;
+
+/* Variable global */
+int N_spawned = 0;
+people *array_p;
+//ARRAY DE HUMANOS
 
 /*Inicializacion del semaforo*/
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -352,6 +353,7 @@ int amIDead(people* person){
   int j = person->p_columna;
   if (person->p_bitten == 0){
     //CREAR UN ZOMBIE
+    P_alive--;
     pthread_exit(NULL);
   } else if (person->p_bitten > 0){
     person->p_bitten = person->p_bitten - 1;
@@ -402,6 +404,42 @@ int amIDead(people* person){
 }
 
 int didIDiededed(zombie* zomb){
+  int i = zomb->z_fila;
+  int j = zomb->z_columna;
+  int w,v;
+  for (int k = 0; k < P; k++){
+    if (array_p[k].p_bitten == -1 && array_p[k].p_weapon > 0){
+      w = array_p[k].p_fila;
+      v = array_p[k].p_columna;
+      if (i-1 == w && j == k){
+        array_p[k].p_weapon = array_p[k].p_weapon - 1;
+        return 1;
+      } else if (i+1 == w && j == k){
+        array_p[k].p_weapon = array_p[k].p_weapon - 1;
+        return 1;
+      } else if (i-1 == w && j == k-1){
+        array_p[k].p_weapon = array_p[k].p_weapon - 1;
+        return 1;
+      } else if (i-1 == w && j == k+1){
+        array_p[k].p_weapon = array_p[k].p_weapon - 1;
+        return 1;
+      } else if (i+1 == w && j == k-1){
+        array_p[k].p_weapon = array_p[k].p_weapon - 1;
+        return 1;
+      } else if (i+1 == w && j == k+1){
+        array_p[k].p_weapon = array_p[k].p_weapon - 1;
+        return 1;
+      }
+      else if (i == w && j == k-1){
+        array_p[k].p_weapon = array_p[k].p_weapon - 1;
+        return 1;
+      }
+      else if (i == w && j == k+1){
+        array_p[k].p_weapon = array_p[k].p_weapon - 1;
+        return 1;
+      }
+    }
+  }
   return 0;
 }
 
@@ -430,13 +468,16 @@ void *create_people(void *arg){
 
 void *create_zombie(void *arg){
     /*Definimos a la persona*/
-    zombie *p = (zombie*) arg;
+    zombie *z = (zombie*) arg;
     while (1) {
-        startZombie(p);
+        startZombie(z);
         pthread_mutex_lock(&mutex);	//Se bloquea el movimiento
-        moveZombie(p);
+        moveZombie(z);
         pthread_mutex_unlock(&mutex);	//Se desbloquea el movimiento
-
+        if (didIDiededed(z) == 1){
+          Z_alive--;
+          pthread_exit(NULL);
+        }
         //getch();
         //printBoard(N,M,board);
     }
@@ -450,7 +491,7 @@ void threads_people(int n_people){
     int i;
     /*Reservamos memoria para los thread y el arreglo*/
     pthread_t *threads_people = (pthread_t*) malloc(n_people*sizeof(pthread_t));
-    people *array_p = (people*)malloc(sizeof(people)*n_people);
+    array_p = (people*)malloc(sizeof(people)*n_people);
     /*Asignamos*/
     for(i=0; i< n_people; i++){
       array_p[i].p_id = i;
