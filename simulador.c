@@ -44,6 +44,7 @@ int main (int argc, char *argv[]){
     refresh();
     boardClock++;
     if (P_alive == 0 || (Z_alive > 0 && P_alive == 0)){
+      getch(); // espera una accion del usuario
       endwin();
     }
     id_barrier1 = pthread_barrier_init(&barrier, NULL, E);
@@ -52,8 +53,6 @@ int main (int argc, char *argv[]){
         sleep(2);
     }
   }
-  getch(); // espera una accion del usuario
-  endwin(); // termina el modo ncurses
 
 
   return 0;
