@@ -4,6 +4,11 @@
 #ifndef THREADS_H_
 #define THREADS_H_
 
+
+/* Variable global */
+int N_spawned = 0;
+//ARRAY DE HUMANOS
+
 /*Estructura de datos necesaria para cada hebra persona*/
 typedef struct people{
     int p_id;	/*Identifica el id del thread*/
@@ -199,6 +204,128 @@ void movePerson(people *persona){
   /*Caso de que no s epueda mover, este se queda quieto*/
 }
 
+void moveZombie(zombie *zomb){
+  /*Comprobamos primeros los 8 casos en orden arriba, abajo, derecha e izquieda*/
+  /*Como el movimiento es aleatorio usamos un random de 0-7*/
+  int i, j;
+  i = zomb->z_fila;
+  j = zomb->z_columna;
+  int contador = 0;
+  int mov = rand()%8;
+  while(contador < 8){
+      if (mov == 0){
+          /*Comprobamos que [i][j-1] arriba*/
+          if(j > 0) {
+            if (board[i][j-1] == '0' || board[i][j-1] == 'G'){
+                zomb->z_columna = j-1;
+                board[i][j-1] = 'Z';
+                board[i][j] = '0';
+                contador = 8;
+            }
+          }
+          /*si esta ocupada suma al contador*/
+          contador = contador + 1;
+      }
+      if (mov == 1){
+          /*Comprobamos que [i][j+1] abajo*/
+          if(j < M-1){
+            if(board[i][j+1] == '0' || board[i][j+1] == 'G'){
+              zomb->z_columna = j+1;
+              board[i][j+1] = 'Z';
+              board[i][j] = '0';
+              contador = 8;
+            }
+        }
+          /*si esta ocupada suma al contador*/
+          contador = contador + 1;
+      }
+      if (mov == 2){
+          /*Comprobamos que [i+1][j] derecha*/
+          if(i < N-1) {
+            if (board[i+1][j] == '0' || board[i+1][j] == 'G'){
+              zomb->z_fila = i+1;
+              board[i+1][j] = 'Z';
+              board[i][j] = '0';
+              contador = 8;
+            }
+          }
+          /*si esta ocupada suma al contador*/
+          contador = contador + 1;
+      }
+      if (mov == 3){
+          /*Comprobamos que [i-1][j] izquierda*/
+          if(i > 0) {
+            if (board[i-1][j] == '0' || board[i-1][j] == 'G'){
+              zomb->z_fila = i-1;
+              board[i-1][j] = 'Z';
+              board[i][j] = '0';
+              contador = 8;
+            }
+        }
+          /*si esta ocupada suma al contador*/
+          contador = contador + 1;
+      }
+      if (mov == 4){
+          /*Comprobamos que [i+1][j-1] derecha arriba*/
+          if(i < N-1 && j > 0) {
+            if (board[i+1][j-1] == '0' || board[i+1][j-1] == 'G'){
+              zomb->z_fila = i+1;
+              zomb->z_columna = j-1;
+              board[i+1][j-1] = 'Z';
+              board[i][j] = '0';
+              contador = 8;
+            }
+        }
+          /*si esta ocupada suma al contador*/
+          contador = contador + 1;
+      }
+      if (mov == 5){
+          /*Comprobamos que [i-1][j-1] izquierda arriba*/
+          if(i > 0 && j > 0) {
+            if (board[i-1][j-1] == '0' || board[i-1][j-1] == 'G'){
+              zomb->z_fila = i-1;
+              zomb->z_columna = j-1;
+              board[i-1][j-1] = 'Z';
+              board[i][j] = '0';
+              contador = 8;
+            }
+          }
+          /*si esta ocupada suma al contador*/
+          contador = contador + 1;
+      }
+      if (mov == 6){
+          /*Comprobamos que [i+1][j+1] derecha abajo*/
+          if(i < N-1 && j < M-1) {
+            if (board[i+1][j+1] == '0' || board[i+1][j+1] == 'G'){
+              zomb->z_fila = i+1;
+              zomb->z_columna = j+1;
+              board[i+1][j+1] = 'Z';
+              board[i][j] = '0';
+              contador = 8;
+            }
+          }
+          /*si esta ocupada suma al contador*/
+          contador = contador + 1;
+      }
+      if (mov == 7){
+          /*Comprobamos que [i-1][j+1] izquierda abajo*/
+          if(i > 0 && j < M-1) {
+            if (board[i-1][j+1] == '0' || board[i-1][j+1] == 'G'){
+              zomb->z_fila = i-1;
+              zomb->z_columna = j+1;
+              board[i-1][j+1] = 'Z';
+              board[i][j] = '0';
+              contador = 8;
+            }
+          }
+          /*si esta ocupada suma al contador*/
+          contador = contador + 1;
+      }
+      mov = (mov+1)%8;
+  }
+  /*Caso de que no s epueda mover, este se queda quieto*/
+}
+
 /*Resolvemos la batalla*/
 /*Esta funcion sera cuando se encuentren*/
 int battle(people *p, zombie *z){
@@ -212,14 +339,28 @@ void *create_people(void *arg){
     while (1) {
       pthread_mutex_lock(&mutex);	//Se bloquea el movimiento
       movePerson(p);
-      erase();
-      printBoardCurses(N,M,board);
-      refresh();
+      pthread_mutex_unlock(&mutex);	//Se desbloquea el movimiento
+      //printBoard(N,M,board);
+      //BARRERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1
+      //Comprobacion de muerte
+      //BARRERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 2
+    }
+}
+
+void *create_zombie(void *arg){
+    /*Definimos a la persona*/
+    zombie *p = (zombie*) arg;
+    while (1) {
+      pthread_mutex_lock(&mutex);	//Se bloquea el movimiento
+      moveZombie(p);
       pthread_mutex_unlock(&mutex);	//Se desbloquea el movimiento
       //getch();
       //printBoard(N,M,board);
-    }
 
+      //BARRERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1
+      //Comprobacion de muerte
+      //BARRERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 2
+    }
 }
 
 /*Funcion que crea todas las personas*/

@@ -28,10 +28,21 @@ int main (int argc, char *argv[]){
 
   initscr(); // inicia la pantalla de ncurses
   threads_people(p);
+  threads_zombies(z);
   printBoardCurses(n,m,board); // imprime todo el board en un espacio imaginario
   refresh(); // actualiza la pantalla de ncurses
+
+  while (1) {
+    //podria haber un mutex...
+    erase();
+    printBoardCurses(N,M,board);
+    refresh();
+    //BARRERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1
+    //BARRERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 2
+  }
   getch(); // espera una accion del usuario
   endwin(); // termina el modo ncurses
+
 
   return 0;
 }
